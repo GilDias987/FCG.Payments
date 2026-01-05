@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/document/" />
+  <Folder Name="/src/" />
+  <Folder Name="/src/Application/">
+    <Project Path="FCG.Payments.Application.Dto/FCG.Payments.Application.Dto.csproj" />
+    <Project Path="FCG.Payments.Application.Interface/FCG.Payments.Application.Interface.csproj" />
+    <Project Path="FCG.Payments.Application.UseCases/FCG.Payments.Application.UseCases.csproj" />
+  </Folder>
+  <Folder Name="/src/Domain/">
+    <Project Path="FCG.Payments.Domain/FCG.Payments.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="FCG.Payments.Infrastructure/FCG.Payments.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/">
+    <Project Path="FCG.Payments.WebAPI/FCG.Payments.WebAPI.csproj" />
+  </Folder>
+  <Folder Name="/test/" />
+  <Folder Name="/test/Application/">
+    <Project Path="FCG.Payments.Application.Test/FCG.Payments.Application.Test.csproj" />
+  </Folder>
+  <Folder Name="/test/Domain/">
+    <Project Path="FCG.Payments.DomainTest/FCG.Payments.DomainTest.csproj" />
+  </Folder>
+</Solution>
