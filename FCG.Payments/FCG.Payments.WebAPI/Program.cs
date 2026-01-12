@@ -22,7 +22,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddOpenApiDocument(options =>
 {
-    options.Title = "Api - Fiap Cloud Game";
+    options.Title = "Api Payments - Fiap Cloud Game";
     options.Version = "1.0";
     options.AddSecurity("Bearer", new NSwag.OpenApiSecurityScheme
     {
