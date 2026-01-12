@@ -19,7 +19,7 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Queries
 
         public async Task<PlaymentDto> Handle(GetPaymentQuery request, CancellationToken cancellationToken)
         {
-            var payment = await _paymentRepository.GetPayment(request.userId, request.gameId);
+            var payment = await _paymentRepository.GetPayment(request.UserId, request.GameId);
 
             if (payment is null)
             {
