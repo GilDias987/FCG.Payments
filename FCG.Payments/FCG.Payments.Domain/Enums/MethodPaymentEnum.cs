@@ -5,13 +5,13 @@ using System.Text;
 
 namespace FCG.Payments.Domain.Enums
 {
-    public enum MethodPaymentEnum
+    public enum MethodPaymentEnum 
     {
         [Description("Cartão")]
-        Card,
+        Card = 'C',
         [Description("Boleto")]
-        Ticket,
+        Ticket = 'B',
         [Description("Pix")]
-        Pix
+        Pix = 'P'
     }
 }
