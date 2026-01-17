@@ -8,14 +8,14 @@ using System.Xml.Linq;
 
 namespace FCG.Payments.Domain.Entities
 {
-    public class Playment : BaseEntity
+    public class Payment : BaseEntity
     {
-        public Playment()
+        public Payment()
         {
 
         }
 
-        public Playment(int userId, int gameId, MethodPaymentEnum methodPayment, StatusPaymentEnum statusPayment)
+        public Payment(int userId, int gameId, MethodPaymentEnum methodPayment, StatusPaymentEnum statusPayment)
         {
             Initialize(userId, gameId, methodPayment, statusPayment);
         }

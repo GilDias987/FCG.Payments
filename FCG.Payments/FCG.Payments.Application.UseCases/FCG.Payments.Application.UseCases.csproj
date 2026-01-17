@@ -9,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="MassTransit" Version="9.0.0" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="9.0.0" />
     <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
   </ItemGroup>
@@ -16,6 +20,13 @@
   <ItemGroup>
     <ProjectReference Include="..\FCG.Payments.Application.Dto\FCG.Payments.Application.Dto.csproj" />
     <ProjectReference Include="..\FCG.Payments.Application.Interface\FCG.Payments.Application.Interface.csproj" />
+    <ProjectReference Include="..\FCG.Payments.Domain\FCG.Payments.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FCG.Shared.Contracts">
+      <HintPath>_dll\FCG.Shared.Contracts.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
