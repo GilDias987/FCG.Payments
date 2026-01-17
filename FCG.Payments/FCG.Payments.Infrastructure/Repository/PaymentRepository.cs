@@ -10,13 +10,13 @@ using System.Text;
 namespace FCG.Payments.Infrastructure.Repository
 {
 
-    public class PaymentRepository : EFRepository<Playment>, IPaymentRepository
+    public class PaymentRepository : EFRepository<Payment>, IPaymentRepository
     {
         public PaymentRepository(ApplicationDbContext context) : base(context)
         {
         }
 
-        public async Task<Playment?> GetPayment(int userId, int gameId)
+        public async Task<Payment?> GetPayment(int userId, int gameId)
         {
             return await _dbSet.Where(x => x.UserId == userId && x.GameId == gameId).FirstOrDefaultAsync();
         }

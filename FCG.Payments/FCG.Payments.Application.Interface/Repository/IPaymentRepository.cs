@@ -5,8 +5,8 @@ using System.Text;
 
 namespace FCG.Payments.Application.Interface.Repository.Base
 {
-    public interface IPaymentRepository : IRepository<Playment>
+    public interface IPaymentRepository : IRepository<Payment>
     {
-        Task<Playment?> GetPayment(int userId, int gameId);
+        Task<Payment?> GetPayment(int userId, int gameId);
     }
 }

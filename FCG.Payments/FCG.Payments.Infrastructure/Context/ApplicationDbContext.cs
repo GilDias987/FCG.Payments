@@ -28,7 +28,7 @@ namespace FCG.Payments.Infrastructure.Context
 
         #region DbSet
 
-        public DbSet<Playment> Playment { get; set; }
+        public DbSet<Payment> Playment { get; set; }
 
 
         #endregion

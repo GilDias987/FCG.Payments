@@ -7,9 +7,9 @@ namespace FCG.Payments.Domain.Enums
 {
     public enum StatusPaymentEnum
     {
-        [Description("Autorizado")]
-        Authorized,
-        [Description("Não Autorizado")]
-        Unauthorized
+        [Description("Approved")]
+        Approved = '0',
+        [Description("Rejected")]
+        Rejected = '1'
     }
 }
