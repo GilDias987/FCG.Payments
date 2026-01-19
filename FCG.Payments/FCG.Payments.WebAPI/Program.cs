@@ -41,6 +41,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(configuration.GetConnectionString("ConnectionStrings"));
 }, ServiceLifetime.Scoped);
 
+Console.WriteLine(configuration.GetConnectionString("ConnectionStrings"));
+
 #region [JWT]
 
 builder.Services.AddAuthentication(options =>
@@ -97,5 +99,11 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseExceptionHandler();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
