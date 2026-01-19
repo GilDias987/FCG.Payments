@@ -41,6 +41,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(configuration.GetConnectionString("ConnectionStrings"));
 }, ServiceLifetime.Scoped);
 
+Console.WriteLine(configuration.GetConnectionString("ConnectionStrings"));
+
 #region [JWT]
 
 builder.Services.AddAuthentication(options =>
