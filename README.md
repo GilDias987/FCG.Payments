@@ -22,12 +22,32 @@ Este serviço atua como um processador intermediário no fluxo de checkout.
 * **Documentação:** Swagger
 * **Orquestração:** Docker & Kubernetes
 
-## 4. Variáveis de Ambiente
-| Variável | Descrição | Exemplo |
-| :--- | :--- | :--- |
-| `ConnectionStrings__DefaultConnection` | String de conexão com SQL Server | `Server=db;Database=PaymentsDb;...` |
-| `RabbitMQ__Host` | Host do Broker de Mensageria | `rabbitmq://rabbitmq-service` |
-| `PaymentSettings__SimulationDelay` | Tempo simulado de processamento | `2000` |
+## 4. Configuração do Ambiente
+Para que a aplicação funcione corretamente, edite o arquivo `appsettings.Development.json` seguindo o modelo abaixo:
+
+```json
+{
+  "ConnectionStrings": {
+    "ConnectionStrings": "Server=payments-sqlserver,1433;Initial Catalog=db_fcg_payments;Persist Security Info=False;User ID=sa;Password=pass@123;Encrypt=False;Pooling=True;TrustServerCertificate=True"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "Jwt": {
+    "Key": "ChaveSuperSecretaComMaisDe32CaracteresAqui12345",
+    "Issuer": "FCG-Users"
+  },
+  "Rabbitmq": {
+    "Url": "localhost",
+    "Username": "admin",
+    "Password": "admin123"
+  },
+  "AllowedHosts": "*"
+}
+```
 
 ## 👥 Integrantes
 - **Nome do Grupo:**: 33.
