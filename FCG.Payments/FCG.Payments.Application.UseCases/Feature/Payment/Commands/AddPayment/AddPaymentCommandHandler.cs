@@ -2,6 +2,7 @@
 using FCG.Payments.Domain.Extensions;
 using FCG.Shared.Contracts;
 using MassTransit;
+using MassTransit.Transports;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,12 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
     public class AddPaymentCommandHandler : IRequestHandler<AddPaymentCommand, bool>
     {
         private readonly IPaymentRepository _paymentRepository;
-        private readonly IBus _bus;
+        private readonly ISendEndpointProvider _sendEndpointProvider;
 
-        public AddPaymentCommandHandler(IPaymentRepository paymentRepository, IBus bus)
+        public AddPaymentCommandHandler(IPaymentRepository paymentRepository, ISendEndpointProvider sendEndpointProvider)
         {
             _paymentRepository = paymentRepository;
-            _bus = bus;
+            _sendEndpointProvider = sendEndpointProvider;
         }
 
         public async Task<bool> Handle(AddPaymentCommand request, CancellationToken cancellationToken)
@@ -26,8 +27,7 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
             try
             {
                 var payment = await _paymentRepository.AddAsync(new Domain.Entities.Payment(request.UserId, request.GameId, request.MethodPayment, request.StatusPayment));
-
-                await _bus.Publish(new PaymentProcessedEvent
+                var paymentProcessedEvent = new PaymentProcessedEvent
                 {
                     GameId = request.GameId,
                     UserId = request.UserId,
@@ -35,9 +35,12 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
                     PaymentMethod = request.StatusPayment.GetDescription(),
                     Name = request.Name,
                     Email = request.Email,
-                    Game = request.Game 
-                });
-                                                                
+                    Game = request.Game
+                };
+
+                await CreateQueuePaymentProcess(paymentProcessedEvent, "queue:payment-process-catalog-queue");
+                await CreateQueuePaymentProcess(paymentProcessedEvent, "queue:payment-process-notification-queue");
+
                 return true;
 
             }
@@ -45,6 +48,19 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
             {
                 Console.WriteLine($"Error no envio do email: {ex.Message}");
                 return false;
+            }
+        }
+
+        private async Task CreateQueuePaymentProcess(PaymentProcessedEvent paymentProcessedEvent, string queue)
+        {
+            try
+            {
+                var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(queue));
+                await endpoint.Send(paymentProcessedEvent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error no envio do email: {ex.Message}");
             }
         }
     }
