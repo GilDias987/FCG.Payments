@@ -24,16 +24,18 @@ namespace FCG.Payments.Application.UseCases.Registration
             {
                 x.AddConsumer<MakePaymentConsumer>();
 
-                x.UsingRabbitMq((context, cfg) =>
+                x.UsingAzureServiceBus((context, cfg) =>
                 {
-                    cfg.Host(configuration["Rabbitmq:Url"], "/", h =>
-                    {
-                        h.Username(configuration["Rabbitmq:Username"]);
-                        h.Password(configuration["Rabbitmq:Password"]);
-                    });
+                    cfg.Host(configuration["ServiceBus:ConnectionString"]);
 
                     cfg.ReceiveEndpoint("payment-create-queue", e =>
                     {
+                        // não criar topology automática (evita topics)
+                        e.ConfigureConsumeTopology = false;
+
+                        // evita propriedades não suportadas
+                        e.RemoveSubscriptions = true;
+
                         e.ConfigureConsumer<MakePaymentConsumer>(context);
                     });
                 });
