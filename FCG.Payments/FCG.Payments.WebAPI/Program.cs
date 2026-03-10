@@ -2,6 +2,7 @@ using FCG.Payments.Application.Interface.Repository.Base;
 using FCG.Payments.Application.UseCases.Registration;
 using FCG.Payments.Infrastructure.Context;
 using FCG.Payments.Infrastructure.Repository;
+using FCG.Payments.WebAPI.Configurations;
 using FCG.Payments.WebAPI.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
+
+// Configura o Serilog para ler o appsettings.json
+builder.AddSerilogLogging();
 
 // Add services to the container.
 
