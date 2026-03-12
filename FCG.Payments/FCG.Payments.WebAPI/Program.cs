@@ -11,10 +11,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .Build();
-
 // Configura o Serilog para ler o appsettings.json
 builder.AddSerilogLogging();
 
@@ -41,9 +37,11 @@ builder.Services.AddOpenApiDocument(options =>
         new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 });
 
+var sqlConn = builder.Configuration.GetConnectionString("ConnectionStrings");
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
-    options.UseSqlServer(configuration.GetConnectionString("ConnectionStrings"));
-}, ServiceLifetime.Scoped);
+{
+    options.UseSqlServer(sqlConn);
+});
 
 Console.WriteLine(configuration.GetConnectionString("ConnectionStrings"));
 
