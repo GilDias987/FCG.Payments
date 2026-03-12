@@ -11,7 +11,7 @@ namespace FCG.Payments.Infrastructure.Context
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
-
+            {}
         #region DbSet
 
         public DbSet<Payment> Playment { get; set; }

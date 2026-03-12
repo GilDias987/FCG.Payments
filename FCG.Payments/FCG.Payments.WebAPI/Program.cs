@@ -38,12 +38,10 @@ builder.Services.AddOpenApiDocument(options =>
 });
 
 var sqlConn = builder.Configuration.GetConnectionString("ConnectionStrings");
-builder.Services.AddDbContext<ApplicationDbContext>(options => {
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
 {
     options.UseSqlServer(sqlConn);
 });
-
-Console.WriteLine(configuration.GetConnectionString("ConnectionStrings"));
 
 #region [JWT]
 
