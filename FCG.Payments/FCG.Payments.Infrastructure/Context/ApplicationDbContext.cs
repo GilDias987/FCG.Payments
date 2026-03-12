@@ -9,21 +9,10 @@ namespace FCG.Payments.Infrastructure.Context
 {
     public class ApplicationDbContext : DbContext
     {
-        private readonly string _connectionString;
 
-        public ApplicationDbContext()
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+       : base(options)
         {
-            IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            _connectionString = configuration.GetConnectionString("ConnectionStrings");
-        }
-
-        public ApplicationDbContext(string connectionString)
-        {
-            _connectionString = connectionString;
         }
 
         #region DbSet
@@ -33,17 +22,11 @@ namespace FCG.Payments.Infrastructure.Context
 
         #endregion
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(_connectionString, builder => builder.EnableRetryOnFailure());
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
