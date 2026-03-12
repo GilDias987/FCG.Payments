@@ -9,9 +9,12 @@ namespace FCG.Payments.Infrastructure.Context
 {
     public class ApplicationDbContext : DbContext
     {
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-            {}
+       : base(options)
+        {
+        }
+
         #region DbSet
 
         public DbSet<Payment> Playment { get; set; }
