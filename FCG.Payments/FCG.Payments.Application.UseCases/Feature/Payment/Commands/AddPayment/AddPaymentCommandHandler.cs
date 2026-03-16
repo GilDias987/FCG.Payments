@@ -1,4 +1,5 @@
 ﻿using FCG.Payments.Application.Interface.Repository.Base;
+using FCG.Payments.Application.Interface.Service;
 using FCG.Payments.Domain.Extensions;
 using FCG.Shared.Contracts;
 using MassTransit;
@@ -15,11 +16,13 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly ISendEndpointProvider _sendEndpointProvider;
+        private readonly IEmailService _emailService;
 
-        public AddPaymentCommandHandler(IPaymentRepository paymentRepository, ISendEndpointProvider sendEndpointProvider)
+        public AddPaymentCommandHandler(IEmailService emailService, IPaymentRepository paymentRepository, ISendEndpointProvider sendEndpointProvider)
         {
             _paymentRepository = paymentRepository;
             _sendEndpointProvider = sendEndpointProvider;
+            _emailService = emailService;
         }
 
         public async Task<bool> Handle(AddPaymentCommand request, CancellationToken cancellationToken)
@@ -39,7 +42,7 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
                 };
 
                 await CreateQueuePaymentProcess(paymentProcessedEvent, "queue:payment-process-catalog-queue");
-                await CreateQueuePaymentProcess(paymentProcessedEvent, "queue:payment-process-notification-queue");
+                await CreateQueuePaymentEmail(paymentProcessedEvent, "queue:email-queue");
 
                 return true;
 
@@ -57,6 +60,20 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
             {
                 var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(queue));
                 await endpoint.Send(paymentProcessedEvent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error no envio do email: {ex.Message}");
+            }
+        }
+
+        private async Task CreateQueuePaymentEmail(PaymentProcessedEvent paymentProcessedEvent, string queue)
+        {
+            try
+            {
+                var endpointEmail = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:email-queue"));
+                var email = _emailService.EmailMessage(paymentProcessedEvent.Email, paymentProcessedEvent.Name, paymentProcessedEvent.Game, paymentProcessedEvent.Price);
+                await endpointEmail.Send(email);
             }
             catch (Exception ex)
             {
