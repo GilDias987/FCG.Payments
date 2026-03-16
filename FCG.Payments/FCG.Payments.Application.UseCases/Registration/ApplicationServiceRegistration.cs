@@ -1,5 +1,7 @@
-﻿using FCG.Payments.Application.UseCases.Behavirour;
+﻿using FCG.Payments.Application.Interface.Service;
+using FCG.Payments.Application.UseCases.Behavirour;
 using FCG.Payments.Application.UseCases.Feature.Payment.Consumers.MakePayment;
+using FCG.Payments.Application.UseCases.Service;
 using FluentValidation;
 using MassTransit;
 using MediatR;
@@ -19,6 +21,7 @@ namespace FCG.Payments.Application.UseCases.Registration
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddMassTransit(x =>
             {
