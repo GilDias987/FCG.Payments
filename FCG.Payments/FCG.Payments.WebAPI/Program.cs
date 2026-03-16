@@ -37,9 +37,8 @@ builder.Services.AddOpenApiDocument(options =>
         new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 });
 
-
 var sqlConn = builder.Configuration.GetConnectionString("ConnectionStrings");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
 {
     options.UseSqlServer(sqlConn);
 });
