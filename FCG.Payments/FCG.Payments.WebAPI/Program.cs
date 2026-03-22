@@ -11,8 +11,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configura o Serilog para ler o appsettings.json
-builder.AddSerilogLogging();
+// Configura o ILogger para ler o appsettings.json
+builder.AddLogging();
 
 // Add services to the container.
 
