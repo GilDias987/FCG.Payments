@@ -2,24 +2,25 @@
 using FCG.Payments.Domain.Enums;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace FCG.Payments.Application.UseCases.Feature.Payment.Consumers.MakePayment
 {
     public class MakePaymentConsumer : IConsumer<FCG.Shared.Contracts.OrderPlacedEvent>
     {
         private readonly IMediator _mediator;
-        public MakePaymentConsumer(IMediator mediator)
+        private readonly ILogger<MakePaymentConsumer> _logger;
+
+        public MakePaymentConsumer(IMediator mediator, ILogger<MakePaymentConsumer> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
         public Task Consume(ConsumeContext<FCG.Shared.Contracts.OrderPlacedEvent> context)
         {
+            _logger.LogInformation("Recebido pedido de pagamento: Jogo: {Game} do Usuário: {UserName}", context.Message.Game, context.Message.Name);
 
-            FCG.Payments.Domain.Enums.MethodPaymentEnum typePayment = (MethodPaymentEnum)char.Parse(context.Message.PaymentMethod);
+            MethodPaymentEnum typePayment = (MethodPaymentEnum)char.Parse(context.Message.PaymentMethod);
 
             return _mediator.Send(new AddPaymentCommand
             {
