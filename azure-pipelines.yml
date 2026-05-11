@@ -18,8 +18,8 @@ variables:
   namespace: 'fcg-prod'
 
   acrName: 'acrfcgprod'
-  imageRepository: 'Paymentsapi'
-  containerName: 'Paymentsapi'
+  imageRepository: 'paymentsapi'
+  containerName: 'paymentsapi'
   containerPort: '8080'
 
   imageTag: '$(Build.SourceVersion)'
