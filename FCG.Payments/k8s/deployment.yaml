@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentsapi
+  namespace: fcg-prod
+  labels:
+    app: paymentsapi
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  selector:
+    matchLabels:
+      app: paymentsapi
+
+  template:
+    metadata:
+      labels:
+        app: paymentsapi
+    spec:
+      # ✅ Volume CSI para Key Vault
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: kv-fcg-prod-253
+
+      containers:
+        - name: paymentsapi
+          image: acrfcgprod.azurecr.io/paymentsapi:__TAG__
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8080
+
+          # ✅ Monta o volume CSI (sem isso, o CSI não injeta nada)
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets-store
+              readOnly: true
+
+          # ✅ Variáveis necessárias (como você listou)
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+
+            - name: PATH_BASE
+              value: "/payments"
+
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+
+            - name: ConnectionStrings__ConnectionStrings
+              valueFrom:
+                secretKeyRef:
+                  name: payments-api-secret
+                  key: CONNECTIONSTRINGS__CONNECTIONSTRINGS
+
+            - name: Jwt__Issuer
+              valueFrom:
+                secretKeyRef:
+                  name: payments-api-secret
+                  key: JWT__ISSUER
+
+            - name: Jwt__Key
+              valueFrom:
+                secretKeyRef:
+                  name: payments-api-secret
+                  key: JWT__KEY
+
+            - name: Redis__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: payments-api-secret
+                  key: REDIS__CONNECTIONSTRING
+
+            - name: Mongodbsql__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: payments-api-secret
+                  key: MONGODBSQL__CONNECTIONSTRING
+
+            - name: ServiceBus__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: payments-api-secret
+                  key: SERVICEBUS__CONNECTIONSTRING
+
+            - name: ApplicationInsights__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: payments-api-secret
+                  key: APPLICATIONINSIGHTS__CONNECTIONSTRING
+
+          # ✅ Rolling update “de verdade”: só troca quando estiver pronto
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 6
+
+          # ✅ Se travar, reinicia
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 25
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
