@@ -1,5 +1,7 @@
 using FCG.Payments.Application.Interface.Repository.Base;
+using FCG.Payments.Application.UseCases.Interceptor;
 using FCG.Payments.Application.UseCases.Registration;
+using FCG.Payments.Application.UseCases.Service;
 using FCG.Payments.Infrastructure.Context;
 using FCG.Payments.Infrastructure.Repository;
 using FCG.Payments.WebAPI.Configurations;
@@ -7,6 +9,7 @@ using FCG.Payments.WebAPI.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +44,21 @@ var sqlConn = builder.Configuration.GetConnectionString("ConnectionStrings");
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
 {
     options.UseSqlServer(sqlConn);
+});
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var connectionString = builder.Configuration["Mongodbsql:ConnectionString"];
+    return new MongoClient(connectionString);
+});
+
+builder.Services.AddSingleton<MongoAuditService>();
+builder.Services.AddScoped<AuditInterceptor>();
+
+builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+{
+    options.UseSqlServer(sqlConn);
+    options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
 });
 
 #region [JWT]
