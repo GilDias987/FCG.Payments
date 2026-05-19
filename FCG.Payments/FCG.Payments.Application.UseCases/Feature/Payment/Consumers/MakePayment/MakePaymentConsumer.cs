@@ -8,9 +8,12 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Consumers.MakePaymen
     public class MakePaymentConsumer : IConsumer<FCG.Shared.Contracts.OrderPlacedEvent>
     {
         private readonly IMediator _mediator;
-        public MakePaymentConsumer(IMediator mediator)
+        private readonly ILogger<MakePaymentConsumer> _logger;
+
+        public MakePaymentConsumer(IMediator mediator, ILogger<MakePaymentConsumer> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
         public Task Consume(ConsumeContext<FCG.Shared.Contracts.OrderPlacedEvent> context)
         {
