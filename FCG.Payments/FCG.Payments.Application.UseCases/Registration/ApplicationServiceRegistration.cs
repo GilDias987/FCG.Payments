@@ -7,10 +7,8 @@ using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
+using StackExchange.Redis;
 using System.Reflection;
-using System.Text;
 
 namespace FCG.Payments.Application.UseCases.Registration
 {
@@ -22,6 +20,7 @@ namespace FCG.Payments.Application.UseCases.Registration
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddScoped<IEmailService, EmailService>();
+            services.AddSingleton<ICacheService, CacheService>();
 
             services.AddMassTransit(x =>
             {
@@ -43,6 +42,24 @@ namespace FCG.Payments.Application.UseCases.Registration
                     });
                 });
             });
+
+
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var configurationRedis = configuration["Redis:ConnectionString"];
+
+                var options = ConfigurationOptions.Parse(configurationRedis);
+
+                options.ConnectTimeout = 30000;
+                options.SyncTimeout = 30000;
+                options.AbortOnConnectFail = false;
+
+                options.Ssl = true;
+                options.ReconnectRetryPolicy = new ExponentialRetry(5000);
+
+                return ConnectionMultiplexer.Connect(options);
+            });
+
 
             return services;
         }
