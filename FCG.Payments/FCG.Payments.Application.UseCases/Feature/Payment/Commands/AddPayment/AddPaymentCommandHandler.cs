@@ -3,12 +3,7 @@ using FCG.Payments.Application.Interface.Service;
 using FCG.Payments.Domain.Extensions;
 using FCG.Shared.Contracts;
 using MassTransit;
-using MassTransit.Transports;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 
 namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
 {
@@ -17,12 +12,16 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
         private readonly IPaymentRepository _paymentRepository;
         private readonly ISendEndpointProvider _sendEndpointProvider;
         private readonly IEmailService _emailService;
+        private readonly ICacheService _cacheService;
 
-        public AddPaymentCommandHandler(IEmailService emailService, IPaymentRepository paymentRepository, ISendEndpointProvider sendEndpointProvider)
+        private const string CacheKey = "payments:get";
+
+        public AddPaymentCommandHandler(IEmailService emailService, IPaymentRepository paymentRepository, ISendEndpointProvider sendEndpointProvider, ICacheService cacheService)
         {
             _paymentRepository = paymentRepository;
             _sendEndpointProvider = sendEndpointProvider;
             _emailService = emailService;
+            _cacheService = cacheService;
         }
 
         public async Task<bool> Handle(AddPaymentCommand request, CancellationToken cancellationToken)
@@ -30,15 +29,19 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Commands.AddPayment
             try
             {
                 var payment = await _paymentRepository.AddAsync(new Domain.Entities.Payment(request.UserId, request.GameId, request.MethodPayment, request.StatusPayment));
+
+                // Remover cache Redis.
+                await _cacheService.RemoveAsync(CacheKey);
+
                 var paymentProcessedEvent = new PaymentProcessedEvent
                 {
-                    GameId = request.GameId,
-                    UserId = request.UserId,
-                    Price = request.Price,
+                    GameId        = request.GameId,
+                    UserId        = request.UserId,
+                    Price         = request.Price,
                     PaymentMethod = request.StatusPayment.GetDescription(),
-                    Name = request.Name,
-                    Email = request.Email,
-                    Game = request.Game
+                    Name          = request.Name,
+                    Email         = request.Email,
+                    Game          = request.Game
                 };
 
                 await CreateQueuePaymentProcess(paymentProcessedEvent, "queue:payment-process-catalog-queue");

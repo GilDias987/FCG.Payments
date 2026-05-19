@@ -9,19 +9,19 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Queries
     public class GetPaymentQueryHandler : IRequestHandler<GetPaymentQuery, PlaymentDto>
     {
         private readonly IPaymentRepository _paymentRepository;
-        private readonly ICacheService _cache;
+        private readonly ICacheService _cacheService;
 
         private const string CacheKey = "payments:get";
 
-        public GetPaymentQueryHandler(IPaymentRepository paymentRepository, ICacheService cache)
+        public GetPaymentQueryHandler(IPaymentRepository paymentRepository, ICacheService cacheService)
         {
             _paymentRepository = paymentRepository;
-            _cache = cache;
+            _cacheService = cacheService;
         }
 
         public async Task<PlaymentDto> Handle(GetPaymentQuery request, CancellationToken cancellationToken)
         {
-            var cached = await _cache.GetAsync<PlaymentDto>(CacheKey);
+            var cached = await _cacheService.GetAsync<PlaymentDto>(CacheKey);
 
             if (cached is not null && cached.Id != 0)
                 return cached;
@@ -31,7 +31,8 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Queries
             if (payment is null)
                 throw new ArgumentException("Nenhum registro encontrado.");
 
-            return new PlaymentDto {
+            return new PlaymentDto 
+            {
                 Id            = payment.Id,
                 UsuarioId     = payment.UserId,
                 GameId        = payment.GameId,
