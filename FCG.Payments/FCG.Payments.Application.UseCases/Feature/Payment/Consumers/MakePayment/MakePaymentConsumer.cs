@@ -8,12 +8,10 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Consumers.MakePaymen
     public class MakePaymentConsumer : IConsumer<FCG.Shared.Contracts.OrderPlacedEvent>
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<MakePaymentConsumer> _logger;
 
-        public MakePaymentConsumer(IMediator mediator, ILogger<MakePaymentConsumer> logger)
+        public MakePaymentConsumer(IMediator mediator)
         {
             _mediator = mediator;
-            _logger = logger;
         }
         public Task Consume(ConsumeContext<FCG.Shared.Contracts.OrderPlacedEvent> context)
         {
@@ -23,10 +21,10 @@ namespace FCG.Payments.Application.UseCases.Feature.Payment.Consumers.MakePaymen
             {
                 GameId = context.Message.GameId,
                 UserId = context.Message.UserId,
-                Price  = context.Message.Price!.Value,
+                Price = context.Message.Price!.Value,
                 MethodPayment = typePayment,
                 StatusPayment = StatusPaymentEnum.Approved,
-                Game = context.Message.Game,    
+                Game = context.Message.Game,
                 Name = context.Message.Name,
                 Email = context.Message.Email
             });

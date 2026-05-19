@@ -88,18 +88,6 @@ spec:
                   name: payments-api-secret
                   key: MONGODBSQL__CONNECTIONSTRING
 
-            - name: ServiceBus__ConnectionString
-              valueFrom:
-                secretKeyRef:
-                  name: payments-api-secret
-                  key: SERVICEBUS__CONNECTIONSTRING
-
-            - name: ApplicationInsights__ConnectionString
-              valueFrom:
-                secretKeyRef:
-                  name: payments-api-secret
-                  key: APPLICATIONINSIGHTS__CONNECTIONSTRING
-
           # ✅ Rolling update “de verdade”: só troca quando estiver pronto
           readinessProbe:
             httpGet:
